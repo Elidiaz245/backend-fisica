@@ -12,12 +12,14 @@ const client = new Groq({
     apiKey: process.env.GROQ_API_KEY
 });
 
+
 app.post("/resolverIA", async (req, res) => {
     try {
         const texto = req.body.prompt || "";
 
         const response = await client.chat.completions.create({
             model: "llama-3.1-8b-instant",
+
             messages: [
                 { role: "system", content: "Eres una IA que resuelve ejercicios de física paso a paso, con cálculos claros y explicaciones." },
                 { role: "user", content: texto }
@@ -26,6 +28,7 @@ app.post("/resolverIA", async (req, res) => {
         });
 
         const respuesta = response.choices[0].message.content;
+
         res.json({ respuesta });
 
     } catch (error) {
@@ -34,9 +37,8 @@ app.post("/resolverIA", async (req, res) => {
     }
 });
 
-// 🔥 PUERTO CORREGIDO PARA RENDER
-const PORT = process.env.PORT || 3000;
-
+// Iniciar servidor
+const PORT = 3000;
 app.listen(PORT, () => {
-    console.log(`Servidor IA activo en puerto ${PORT}`);
+    console.log(`Servidor IA activo en http://localhost:${PORT}`);
 });
