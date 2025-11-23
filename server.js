@@ -1,0 +1,42 @@
+require('dotenv').config();  // Cargar variables del .env
+const express = require("express");
+const cors = require("cors");
+const Groq = require("groq-sdk");
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// Inicializar cliente Groq con la API Key del .env
+const client = new Groq({
+    apiKey: process.env.GROQ_API_KEY
+});
+
+app.post("/resolverIA", async (req, res) => {
+    try {
+        const texto = req.body.prompt || "";
+
+        const response = await client.chat.completions.create({
+            model: "llama-3.1-8b-instant",
+            messages: [
+                { role: "system", content: "Eres una IA que resuelve ejercicios de física paso a paso, con cálculos claros y explicaciones." },
+                { role: "user", content: texto }
+            ],
+            temperature: 0.2
+        });
+
+        const respuesta = response.choices[0].message.content;
+        res.json({ respuesta });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ respuesta: "Error al comunicarse con la IA." });
+    }
+});
+
+// 🔥 PUERTO CORREGIDO PARA RENDER
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Servidor IA activo en puerto ${PORT}`);
+});
